@@ -1,0 +1,15 @@
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: registry
+spec:
+  virtualhost:
+    fqdn: registry.site1.eqix.vmwedge.com
+    tls:
+      secretName: registry-tls
+  routes:
+    - conditions:
+      - prefix: /
+      services:
+        - name: registry
+          port: 5000
