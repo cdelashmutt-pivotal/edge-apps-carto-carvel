@@ -1,0 +1,40 @@
+apiVersion: carto.run/v1alpha1
+kind: ClusterDelivery
+metadata:
+  name: delivery-relocate
+spec:
+  resources:
+  - name: source-provider
+    params:
+    - name: serviceAccount
+      value: default
+    - name: gitImplementation
+      value: go-git
+    templateRef:
+      kind: ClusterSourceTemplate
+      name: delivery-source-template
+  - sources:
+    - name: source-image
+      resource: source-provider
+    name: image-relocate
+    templateRef:
+      kind: ClusterSourceTemplate
+      name: image-relocate
+    params:
+    - name: local_repo
+      value: registry.site1.eqix.vmwedge.com/app
+    - name: remote_username
+      value: admin
+    - name: remote_password
+      value: Harbor12345
+  - deployment:
+      resource: image-relocate
+    name: deployer
+    params:
+    - name: serviceAccount
+      value: default
+    templateRef:
+      kind: ClusterDeploymentTemplate
+      name: app-deploy-edge
+  selector:
+    app.tanzu.vmware.com/deliverable-type: edge

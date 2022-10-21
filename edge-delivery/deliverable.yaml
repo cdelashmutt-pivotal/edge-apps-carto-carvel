@@ -1,0 +1,19 @@
+apiVersion: carto.run/v1alpha1
+kind: Deliverable
+metadata:
+  labels:
+    app.kubernetes.io/component: deliverable
+    app.kubernetes.io/part-of: tanzu-edge-pos
+    app.tanzu.vmware.com/deliverable-type: edge
+    apps.tanzu.vmware.com/has-tests: "true"
+    apps.tanzu.vmware.com/workload-type: edge
+    carto.run/cluster-template-name: deliverable-template
+    carto.run/resource-name: deliverable
+    carto.run/supply-chain-name: source-test-scan-to-url-edge
+    carto.run/template-kind: ClusterTemplate
+    carto.run/workload-name: pos-txn-monitor-dotnet
+    carto.run/workload-namespace: wrightmi
+  name: pos-txn-monitor-dotnet
+spec:
+  source:
+    image: harbor.eqix.vmwedge.com/apps/pos-txn-monitor-dotnet-wrightmi-bundle:c1a3b5dc-668d-420c-af9b-eb6b0b256dd8
