@@ -138,6 +138,38 @@ spec:
     templateRef:
       kind: ClusterTemplate
       name: config-writer-template-lock
+  - name: deliverable-config-writer
+    params:
+    - name: registry
+      value:
+        ca_cert_data: ""
+        repository: apps
+        server: harbor.eqix.vmwedge.com
+    templateRef:
+      kind: ClusterConfigTemplate
+      name: deliverable-config-writer
+  - name: deliverable-git-writer
+    configs:
+    - name: config
+      resource: deliverable-config-writer
+    params:
+    - name: gitops_server_address
+      value: ssh://git@github.com
+    - name: gitops_repository_owner
+      value: mwright-pivotal
+    - name: gitops_repository_name
+      value: POSTxnMonitor-ops
+    - name: gitops_branch
+      value: dev
+    - name: gitops_user_name
+      value: mwright-pivotal
+    - name: gitops_user_email
+      value: wrightmi@vmware.com
+    - name: gitops_commit_message
+      value: Update from supply chain
+    templateRef:
+      kind: ClusterTemplate
+      name: config-writer-template
   - name: deliverable
     params:
     - name: registry
@@ -147,7 +179,7 @@ spec:
         server: harbor.eqix.vmwedge.com
     templateRef:
       kind: ClusterTemplate
-      name: deliverable-template
+      name: simple-apply
   selector:
     apps.tanzu.vmware.com/has-tests: "true"
   selectorMatchExpressions:

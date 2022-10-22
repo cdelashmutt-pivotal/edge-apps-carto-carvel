@@ -1,0 +1,16 @@
+apiVersion: kappctrl.k14s.io/v1alpha1
+kind: App
+metadata:
+  name: pos-txn-monitor-dotnet-delivery
+spec:
+  fetch:
+  - git:
+      url: https://github.com/mwright-pivotal/POSTxnMonitor-ops
+      ref: origin/main
+      subPath: config/wrightmi/pos-txn-monitor-dotnet
+  template:
+  - ytt: {}
+  deploy:
+  - kapp: {}
+  serviceAccountName: default
+  syncPeriod: 1m0s
