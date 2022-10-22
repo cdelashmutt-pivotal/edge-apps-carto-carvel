@@ -79,10 +79,31 @@ spec:
                     #@overlay/match by="name"
                     - name: pos-txn-monitor-dotnet
                       #@overlay/match missing_ok=True
-                      envFrom:
-                      - secretRef:
-                          name: rabbitmq-default-user
-                        prefix: RABBIT_  
+                      env:
+                      - name: RabbitMQ__Host
+                        valueFrom:
+                          secretKeyRef:
+                            name: rabbitmq-default-user
+                            key: host
+                            optional: false
+                      - name: RabbitMQ__StreamPort
+                        valueFrom:
+                          secretKeyRef:
+                            name: rabbitmq-default-user
+                            key: stream-port
+                            optional: false
+                      - name: RabbitMQ__Username
+                        valueFrom:
+                          secretKeyRef:
+                            name: rabbitmq-default-user
+                            key: username
+                            optional: false
+                      - name: RabbitMQ__Password
+                        valueFrom:
+                          secretKeyRef:
+                            name: rabbitmq-default-user
+                            key: password
+                            optional: false
         paths:
         - pos-txn-monitor.yaml
         valuesFrom:
