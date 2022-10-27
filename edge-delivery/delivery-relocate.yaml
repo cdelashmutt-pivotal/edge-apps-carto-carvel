@@ -13,10 +13,10 @@ spec:
     templateRef:
       kind: ClusterSourceTemplate
       name: delivery-source-template
-  - sources:
+  - name: image-relocate
+    sources:
     - name: source-image
       resource: source-provider
-    name: image-relocate
     templateRef:
       kind: ClusterSourceTemplate
       name: image-relocate
@@ -27,9 +27,9 @@ spec:
       value: admin
     - name: remote_password
       value: Harbor12345
-  - deployment:
+  - name: deployer
+    deployment:
       resource: image-relocate
-    name: deployer
     params:
     - name: serviceAccount
       value: default
