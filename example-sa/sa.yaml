@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-  name: tap-registry
+  name: registry-credentials
   annotations:
     secretgen.carvel.dev/image-pull-secret: ""
 type: kubernetes.io/dockerconfigjson
@@ -14,8 +14,9 @@ metadata:
   name: default
 secrets:
 - name: git-ssh
+- name: registry-credentials
 imagePullSecrets:
-- name: tap-registry
+- name: registry-credentials
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding

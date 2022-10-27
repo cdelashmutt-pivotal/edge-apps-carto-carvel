@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  identity: <base64 encoded OPENSSH Private Key for your git account>
+  identity.pub: <base64 encoded SSH public key cooresponding to the private key in "identity">
+  known_hosts: <base64 known-hosts for your git SSH server>
+  ssh-privatekey: <copy of identity>
+kind: Secret
+metadata:
+  annotations:
+    tekton.dev/git-0: github.com
+  name: git-ssh
+type: kubernetes.io/ssh-auth
