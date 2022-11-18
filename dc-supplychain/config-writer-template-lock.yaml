@@ -113,7 +113,7 @@ spec:
     apiVersion: carto.run/v1alpha1
     kind: Runnable
     metadata:
-      name: #@ data.values.workload.metadata.name + "-config-writer"
+      name: #@ data.values.workload.metadata.name + "-config-writer-lock"
       labels: #@ merge_labels({ "app.kubernetes.io/component": "config-writer" })
     spec:
       #@ if/end hasattr(data.values.workload.spec, "serviceAccountName"):
