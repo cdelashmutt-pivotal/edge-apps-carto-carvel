@@ -1,7 +1,7 @@
 apiVersion: carto.run/v1alpha1
 kind: ClusterSupplyChain
 metadata:
-  name: source-test-scan-to-url-edge
+  name: source-to-url-edge
 spec:
   params:
   - name: maven_repository_url
@@ -19,41 +19,22 @@ spec:
   resources:
   - name: source-provider
     params:
-    - name: serviceAccount
-      value: default
+    - default: default
+      name: serviceAccount
     - name: gitImplementation
       value: go-git
     templateRef:
       kind: ClusterSourceTemplate
       name: source-template
-  - name: source-tester
-    sources:
-    - name: source
-      resource: source-provider
-    templateRef:
-      kind: ClusterSourceTemplate
-      name: testing-pipeline
-  - name: source-scanner
-    params:
-    - default: scan-policy
-      name: scanning_source_policy
-    - default: blob-source-scan-template
-      name: scanning_source_template
-    sources:
-    - name: source
-      resource: source-tester
-    templateRef:
-      kind: ClusterSourceTemplate
-      name: source-scanner-template
   - name: image-provider
     params:
-    - name: serviceAccount
-      value: default
+    - default: default
+      name: serviceAccount
     - name: registry
       value:
         ca_cert_data: ""
-        repository: apps
-        server: harbor.eqix.vmwedge.com
+        repository: tap/supply-chain
+        server: harbor.workshop.amer.end2end.link
     - default: default
       name: clusterBuilder
     - default: ./Dockerfile
@@ -64,7 +45,7 @@ spec:
       name: docker_build_extra_args
     sources:
     - name: source
-      resource: source-scanner
+      resource: source-provider
     templateRef:
       kind: ClusterImageTemplate
       options:
@@ -78,29 +59,27 @@ spec:
           matchFields:
           - key: spec.params[?(@.name=="dockerfile")]
             operator: Exists
-  - name: image-scanner
-    images:
+  - images:
     - name: image
       resource: image-provider
+    name: config-provider
     params:
-    - default: scan-policy
-      name: scanning_image_policy
-    - default: private-image-scan-template
-      name: scanning_image_template
+    - default: default
+      name: serviceAccount
     templateRef:
-      kind: ClusterImageTemplate
-      name: image-scanner-template
-  - name: app-config
-    images:
-    - name: image
-      resource: image-scanner
+      kind: ClusterConfigTemplate
+      name: convention-template
+  - configs:
+    - name: config
+      resource: config-provider
+    name: app-config
     templateRef:
       kind: ClusterConfigTemplate
       options:
-      - name: config-template-edge
+      - name: config-template
         selector:
           matchLabels:
-            apps.tanzu.vmware.com/workload-type: edge
+            apps.tanzu.vmware.com/workload-type: web
       - name: server-template
         selector:
           matchLabels:
@@ -109,81 +88,78 @@ spec:
         selector:
           matchLabels:
             apps.tanzu.vmware.com/workload-type: worker
-  - name: service-bindings
-    configs:
+  - configs:
     - name: app_def
       resource: app-config
+    name: service-bindings
     templateRef:
       kind: ClusterConfigTemplate
       name: service-bindings
-  - name: api-descriptors
-    configs:
+  - configs:
     - name: app_def
       resource: service-bindings
+    name: api-descriptors
     templateRef:
       kind: ClusterConfigTemplate
       name: api-descriptors
-  - name: config-writer
-    configs:
+  # Generate a proper image lock file in the bundle
+  - configs:
     - name: config
       resource: api-descriptors
+    name: config-writer
     params:
-    - name: serviceAccount
-      value: default
+    - default: default
+      name: serviceAccount
     - name: registry
       value:
         ca_cert_data: ""
-        repository: apps
-        server: harbor.eqix.vmwedge.com
+        repository: tap/supply-chain
+        server: harbor.workshop.amer.end2end.link
     templateRef:
       kind: ClusterTemplate
       name: config-writer-template-lock
-  - name: deliverable-config-writer
-    params:
-    - name: registry
-      value:
-        ca_cert_data: ""
-        repository: apps
-        server: harbor.eqix.vmwedge.com
-    templateRef:
-      kind: ClusterConfigTemplate
-      name: deliverable-config-writer
-  - name: deliverable-git-writer
-    configs:
-    - name: config
-      resource: deliverable-config-writer
-    params:
-    - name: gitops_server_address
-      value: ssh://git@github.com
-    - name: gitops_repository_owner
-      value: mwright-pivotal
-    - name: gitops_repository_name
-      value: POSTxnMonitor-ops
-    - name: gitops_branch
-      value: dev
-    - name: gitops_user_name
-      value: mwright-pivotal
-    - name: gitops_user_email
-      value: wrightmi@vmware.com
-    - name: gitops_commit_message
-      value: Update from supply chain
-    templateRef:
-      kind: ClusterTemplate
-      name: config-writer-template
   - name: deliverable
     params:
     - name: registry
       value:
         ca_cert_data: ""
-        repository: apps
-        server: harbor.eqix.vmwedge.com
+        repository: tap/supply-chain
+        server: harbor.workshop.amer.end2end.link
+    templateRef:
+      kind: ClusterConfigTemplate
+      name: external-deliverable-template-config
+  # Write Deliverble to git
+  - name: deliverable-git-writer
+    configs:
+    - name: config
+      resource: deliverable
+    params:
+    - name: gitops_server_address
+      value: https://github.com
+    - name: gitops_repository_owner
+      value: cdelashmutt-pivotal
+    - name: gitops_repository_name
+      value: edge-deliverable
+    - name: gitops_branch
+      value: stage
+    - name: gitops_ssh_secret
+      value: git-http
+    - name: gitops_user_name
+      value: cdelashmutt-pivotal
+    - name: gitops_user_email
+      value: cdelashmutt@vmware.com
+    - name: gitops_commit_message
+      value: Update from supply chain
     templateRef:
       kind: ClusterTemplate
-      name: simple-apply
+      name: config-writer-template
   selector:
-    apps.tanzu.vmware.com/has-tests: "true"
+    se.tanzu.vmware.com/edge: "true"
   selectorMatchExpressions:
   - key: apps.tanzu.vmware.com/workload-type
     operator: In
     values:
-    - edge
+    - web
+    - server
+    - worker
+    

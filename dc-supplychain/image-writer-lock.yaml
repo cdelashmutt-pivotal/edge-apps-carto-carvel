@@ -26,7 +26,7 @@ spec:
       value: /tekton/home/.docker/
     - name: HOME
       value: /tekton/home/
-    image: harbor.eqix.vmwedge.com/tekton-task-images/imgpkg-kbld:latest
+    image: harbor.workshop.amer.end2end.link/chris-test/imgpkg:latest
     name: main
     resources: {}
     script: |-

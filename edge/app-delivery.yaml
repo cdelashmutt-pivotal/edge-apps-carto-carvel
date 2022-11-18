@@ -1,13 +1,13 @@
 apiVersion: kappctrl.k14s.io/v1alpha1
 kind: App
 metadata:
-  name: pos-txn-monitor-dotnet-delivery
+  name: spring-sensors-delivery
 spec:
   fetch:
   - git:
-      url: https://github.com/mwright-pivotal/POSTxnMonitor-ops
+      url: https://github.com/cdelashmutt-pivotal/edge-deliverable
       ref: origin/main
-      subPath: config/wrightmi/pos-txn-monitor-dotnet
+      subPath: config/edge/spring-sensors
   template:
   - ytt: {}
   deploy:
