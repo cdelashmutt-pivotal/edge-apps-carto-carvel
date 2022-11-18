@@ -1,0 +1,10 @@
+apiVersion: carto.run/v1alpha1
+kind: Workload
+metadata:
+  labels:
+    apps.tanzu.vmware.com/workload-type: server
+    se.tanzu.vmware.com/edge: "true"
+  name: spring-sensors
+spec:
+  source:
+    image: harbor.workshop.amer.end2end.link/chris-test/spring-sensors@sha256:3612fff260c1575e21283157bde866ef7d9bcfde98fdbc57f8c7f6553e68b6d6

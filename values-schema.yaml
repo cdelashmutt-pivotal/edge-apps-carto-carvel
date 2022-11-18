@@ -1,0 +1,36 @@
+#@data/values-schema
+---
+#! Registry used to push images
+registry:
+  server: ""
+  repository: ""
+#! Use "go-git" or "libgit2" for interacting with Git
+git_implementation: go-git
+gitops:
+  #! Default Git URL prefix (includes https:// or ssh://) used to push Deliverable objects for deployment on remote clusters 
+  server_address: ""
+  #! The user or project name to use as a default for the gitops repo.  A forward slash and this value are appended to the "server_address" to build out the URL for git operations
+  repository_owner: ""
+  #! The default repository name to use for gitops operations.  A forward slash and this name get appended to the combined "server_address" and "repository_owner" to build out the full Git URL for git operations.
+  repository_name: ""
+  #! The default branch to use for any gitops operations.
+  branch: "main"
+  #! The default value to use for the git user name for any commits
+  username: "supplychain"
+  #! The default value to use for the git user email for any commits
+  email: "supplychain@cluster.local"
+  #! The default commit message to use for Deliverable commits
+  commit_message: ""
+  #! If using an SSH url for git, this is the name of the secret of type "kubernetes.io/ssh-auth" in the namespace the workload is submitted to.
+  ssh_secret: ""
+  #! Use "direct" to have the supply chain commit directly to the git repository.  Use "pull_request" to have the supply chain create a new branch and submit a pull request for the changes.
+  commit_strategy: "direct"
+  pull_request:
+    #! The type of Git server the supply chain is submitting a PR to.  The supply chain uses the https://github.com/jenkins-x/go-scm library.  Refer to https://github.com/jenkins-x/go-scm/blob/main/scm/const.go for the different strings you can use for this setting.
+    server_kind: ""         
+    #! The branch to commit against to use for creating the pull request.  If "", then a random branch name will be generated.
+    commit_branch: ""
+    #! Title for the pull request
+    pull_request_title: ""
+    #! Content for the body of the pull request
+    pull_request_body: ""

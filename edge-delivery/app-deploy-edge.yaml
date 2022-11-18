@@ -50,7 +50,7 @@ spec:
       serviceAccountName: #@ data.values.params.serviceAccount
       fetch:
         - imgpkgBundle:
-            image: #@ data.values.deployment.revision.strip()
+            image: #@ data.values.deployment.revision
 
         - inline:
             paths:

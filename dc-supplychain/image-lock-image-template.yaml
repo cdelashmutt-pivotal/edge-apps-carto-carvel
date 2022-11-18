@@ -1,0 +1,40 @@
+apiVersion: carto.run/v1alpha1
+kind: ClusterImageTemplate
+metadata:
+  name: image-lock
+spec:
+  healthRule:
+    singleConditionType: Ready
+  imagePath: .status.outputs.bundle
+  params:
+  - name: registry
+    default: {}
+  ytt: |
+      #@ load("@ytt:yaml", "yaml")
+      #@ load("@ytt:json", "json")
+      #@ load("@ytt:base64", "base64")
+      #@ load("@ytt:data", "data")
+
+      #@ def image():
+      #@   return "/".join([
+      #@    data.values.params.registry.server,
+      #@    data.values.params.registry.repository,
+      #@    "-".join([
+      #@      data.values.workload.metadata.name,
+      #@      data.values.workload.metadata.namespace,
+      #@      "bundle",
+      #@    ])
+      #@   ]) + ":" + data.values.workload.metadata.uid
+      #@ end
+      ---
+      apiVersion: carto.run/v1alpha1
+      kind: Runnable
+      metadata:
+        name: image-relocate
+      spec:
+        runTemplateRef:
+          name: config-writer-template-lock
+        inputs:
+          bundle: #@ image()
+          files: #@ base64.encode(json.encode(data.values.config))
+          ca_cert_data: #@ data.values.params.registry.ca_cert_data

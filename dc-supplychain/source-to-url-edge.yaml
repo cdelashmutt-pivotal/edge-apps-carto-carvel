@@ -108,17 +108,18 @@ spec:
       resource: api-descriptors
     name: config-writer
     params:
-    - default: default
-      name: serviceAccount
     - name: registry
       value:
         ca_cert_data: ""
         repository: tap/supply-chain
         server: harbor.workshop.amer.end2end.link
     templateRef:
-      kind: ClusterTemplate
-      name: config-writer-template-lock
+      kind: ClusterImageTemplate
+      name: image-lock
   - name: deliverable
+    images:
+    - name: image
+      resource: config-writer
     params:
     - name: registry
       value:
