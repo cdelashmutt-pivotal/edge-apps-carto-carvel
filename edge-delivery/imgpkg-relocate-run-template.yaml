@@ -1,0 +1,24 @@
+apiVersion: carto.run/v1alpha1
+kind: ClusterRunTemplate
+metadata:
+  name: image-relocate
+spec:
+  template:
+    apiVersion: tekton.dev/v1beta1
+    kind: TaskRun
+    metadata:
+      generateName: $(runnable.metadata.name)$-
+      labels: $(runnable.metadata.labels)$
+    spec:
+      taskSpec:
+        results:
+        - name: relocatedBundle
+        steps:
+          - name: relocate
+            image: harbor.workshop.amer.end2end.link/chris-test/imgpkg@sha256:fcfd14d660d189a0f6cbfdd127c9512b678dfd1f9d7cddc0be634140fd8785ba
+            script: |
+              imgpkg copy -b $(runnable.spec.inputs.revision)$ --to-repo $(runnable.spec.inputs.local_repo)$ --lock-output bundle.yaml --registry-verify-certs=false
+              grep image bundle.yaml | awk '{print $2}' > $(results.relocatedBundle.path)
+  outputs:
+    lastTransitionTime: .status.conditions[0].lastTransitionTime
+    relocatedBundle: .status.taskResults[?(@.name == 'relocatedBundle')].value

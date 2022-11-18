@@ -22,11 +22,7 @@ spec:
       name: image-relocate
     params:
     - name: local_repo
-      value: registry.site1.eqix.vmwedge.com/app
-    - name: remote_username
-      value: admin
-    - name: remote_password
-      value: Harbor12345
+      value: registry.mk.aws.grogscave.net/app
   - name: deployer
     deployment:
       resource: image-relocate
@@ -37,4 +33,4 @@ spec:
       kind: ClusterDeploymentTemplate
       name: app-deploy-edge
   selector:
-    app.tanzu.vmware.com/deliverable-type: edge
+    app.tanzu.vmware.com/deliverable-type: edge-relocate

@@ -4,20 +4,17 @@ kind: ClusterSourceTemplate
 metadata:
   name: image-relocate
 spec:
-  revisionPath: .status.taskResults[?(@.name == 'relocatedBundle')].value
-  urlPath: .status.taskResults[?(@.name == 'relocatedBundle')].value
+  revisionPath: .status.outputs.relocatedBundle
+  urlPath: .status.outputs.relocatedBundle
   template:
-    apiVersion: tekton.dev/v1beta1
-    kind: TaskRun
+    apiVersion: carto.run/v1alpha1
+    kind: Runnable
     metadata:
-      name: imgpkg-relocate
+      name: image-relocate
     spec:
-      taskSpec:
-        results:
-        - name: relocatedBundle
-        steps:
-          - name: relocate
-            image: harbor.eqix.vmwedge.com/tekton-task-images/imgpkg-kbld:latest
-            script: |
-              imgpkg copy -b $(sources.source-image.revision)$ --to-repo $(params.local_repo)$  --registry-username $(params.remote_username)$ --registry-password $(params.remote_password)$ --lock-output bundle.yaml --registry-verify-certs=false
-              grep image bundle.yaml | awk '{print $2}' > $(results.relocatedBundle.path)
+      runTemplateRef:
+        name: image-relocate
+      inputs:
+        repository: $(source.url)$
+        revision: $(source.revision)$
+        local_repo: $(params.local_repo)$
