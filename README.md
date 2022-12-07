@@ -16,8 +16,8 @@ apiVersion: carto.run/v1alpha1
 kind: Workload
 metadata:
   labels:
-    apps.tanzu.vmware.com/workload-type: edge
-    apps.tanzu.vmware.com/has-tests: "true"
+    apps.tanzu.vmware.com/workload-type: server #or web, or worker
+    se.tanzu.vmware.com/edge: "true"
 ...
 ```
 
